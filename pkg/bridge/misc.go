@@ -41,6 +41,11 @@ func (c *Color) NSColor() cocoa.NSColor {
 	return cocoa.NSColor_Init(c.R, c.G, c.B, c.A)
 }
 
+func getPrefix(v interface{}) string {
+	rv := reflect.Indirect(reflect.ValueOf(v))
+	return rv.Type().Field(0).Tag.Get("prefix")
+}
+
 //////// unused?
 
 func walk(v reflect.Value, path []string, visitor func(v reflect.Value, parent reflect.Value, path []string) error) error {

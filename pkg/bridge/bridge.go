@@ -20,10 +20,18 @@ import (
 var bridge *Bridge
 
 func init() {
-	fmt.Fprintln(os.Stderr, "registering...")
-	resource.RegisterType("win", reflect.TypeOf(Window{}))
-	resource.RegisterType("ind", reflect.TypeOf(Indicator{}))
-	resource.RegisterType("mnu", reflect.TypeOf(Menu{}))
+	resource.Register(Window{})
+	resource.Register(Menu{})
+	resource.Register(MenuItem{})
+	resource.Register(Indicator{})
+}
+
+type Applier interface {
+	Apply(objc.Object) (objc.Object, error)
+}
+
+type Discarder interface {
+	Discard(objc.Object) error
 }
 
 func Sync(p *rpc.Peer, v interface{}) error {
@@ -31,14 +39,11 @@ func Sync(p *rpc.Peer, v interface{}) error {
 		return fmt.Errorf("not a resource")
 	}
 	handle := resource.GetHandle(v)
-	fmt.Println("get handle:", handle.Handle())
 	if handle == nil {
 		// TODO: use proper registered prefix
-		handle = resource.NewHandle(reflect.ValueOf(v).Type().Elem().Name())
-		fmt.Println("new handle:", handle.Handle())
+		handle = resource.NewHandle(getPrefix(v))
 	}
 	var h string
-	fmt.Println("sync:", handle.Handle())
 	_, err := p.Call("Apply", []interface{}{*handle, v}, &h)
 	resource.SetHandle(v, h)
 	return err
@@ -49,7 +54,6 @@ func Release(p *rpc.Peer, v interface{}) error {
 		return fmt.Errorf("not a resource")
 	}
 	handle := resource.GetHandle(v)
-	fmt.Println("release:", handle.Handle())
 	if handle == nil {
 		return fmt.Errorf("unable to release an uninitialized resource")
 	}
@@ -136,7 +140,6 @@ func (s *Bridge) Release(h resource.Handle) (err error) {
 func (s *Bridge) Apply(h string, patch map[string]interface{}, call *rpc.Call) (resource.Handle, error) {
 	s.Lock()
 	handle := resource.Handle(h)
-	fmt.Fprintln(os.Stderr, "handle:", handle, handle.Prefix(), handle.ID())
 
 	Walk(patch, func(v, p reflect.Value, path []string) error {
 		if path[len(path)-1] == "$fnptr" {
@@ -202,7 +205,7 @@ func (s *Bridge) Reconcile() error {
 				if !exists {
 					continue
 				}
-				rd, ok := r.(resource.Discarder)
+				rd, ok := r.(Discarder)
 				if ok && target != nil {
 					if err := rd.Discard(target); err != nil {
 						//delete(s.objects, *h)
@@ -212,7 +215,7 @@ func (s *Bridge) Reconcile() error {
 				delete(s.objects, *h)
 				continue
 			}
-			ra, ok := r.(resource.Applier)
+			ra, ok := r.(Applier)
 			if ok {
 				var err error
 				target, err = ra.Apply(target)

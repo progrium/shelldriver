@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/manifold/qtalk/golang/rpc"
-	"github.com/progrium/macdriver/bridge/resource"
+	"github.com/progrium/macbridge/pkg/bridge/resource"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/core"
 	"github.com/progrium/macdriver/objc"
@@ -14,7 +14,7 @@ import (
 )
 
 type Menu struct {
-	*resource.Handle /// men:
+	*resource.Handle `prefix:"men"`
 
 	Icon    string
 	Title   string
@@ -71,7 +71,7 @@ func ExportFunc(fn interface{}) *rpc_FuncExport {
 }
 
 type MenuItem struct {
-	*resource.Handle // mit:
+	*resource.Handle `prefix:"mit"`
 
 	Title     string
 	Icon      string

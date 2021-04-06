@@ -3,14 +3,14 @@ package bridge
 import (
 	"encoding/base64"
 
-	"github.com/progrium/macdriver/bridge/resource"
+	"github.com/progrium/macbridge/pkg/bridge/resource"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/core"
 	"github.com/progrium/macdriver/objc"
 )
 
 type Indicator struct {
-	*resource.Handle // ind:
+	*resource.Handle `prefix:"ind"`
 
 	Icon string
 	Text string

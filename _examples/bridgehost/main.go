@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/progrium/macdriver/bridge"
+	"github.com/progrium/macbridge/pkg/bridge"
 )
 
 func main() {

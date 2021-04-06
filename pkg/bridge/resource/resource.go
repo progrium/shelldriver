@@ -3,11 +3,9 @@ package resource
 import (
 	"fmt"
 	"log"
-	"os"
 	"reflect"
 	"strings"
 
-	"github.com/progrium/macdriver/objc"
 	"github.com/rs/xid"
 )
 
@@ -15,14 +13,6 @@ var registeredTypes map[string]reflect.Type
 
 func init() {
 	registeredTypes = make(map[string]reflect.Type)
-}
-
-type Applier interface {
-	Apply(objc.Object) (objc.Object, error)
-}
-
-type Discarder interface {
-	Discard(objc.Object) error
 }
 
 func TypePrefix(v interface{}) string {
@@ -36,8 +26,10 @@ func TypePrefix(v interface{}) string {
 	return ""
 }
 
-func RegisterType(prefix string, rtype reflect.Type) {
-	registeredTypes[prefix] = rtype
+func Register(v interface{}) {
+	rv := reflect.Indirect(reflect.ValueOf(v))
+	prefix := rv.Type().Field(0).Tag.Get("prefix")
+	registeredTypes[prefix] = rv.Type()
 }
 
 func New(prefix string) interface{} {
@@ -46,7 +38,7 @@ func New(prefix string) interface{} {
 		log.Panicf("resource type not registered: %s", prefix)
 	}
 	h := NewHandle(prefix)
-	r := reflect.New(t).Elem().Interface()
+	r := reflect.New(t).Interface()
 	SetHandle(r, h.Handle())
 	return r
 }
@@ -98,9 +90,8 @@ func SetHandle(v interface{}, h string) {
 	}
 	handle := Handle(h)
 	ptr := reflect.ValueOf(&handle)
-	res := reflect.Indirect(reflect.ValueOf(v))
-	res.Field(0).Set(ptr)
-	fmt.Fprintln(os.Stderr, "sethandle:", v, handle.Handle())
+	res := reflect.ValueOf(v)
+	res.Elem().Field(0).Set(ptr)
 }
 
 func (h *Handle) Prefix() string {
