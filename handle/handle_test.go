@@ -1,4 +1,4 @@
-package resource
+package handle
 
 import (
 	"testing"
@@ -11,15 +11,13 @@ type FakeResource struct {
 	Bar int
 }
 
-func TestResource(t *testing.T) {
-	Register(FakeResource{})
-	v := New("res")
+func TestHandle(t *testing.T) {
+	v := FakeResource{}
 
-	if !HasHandle(v) {
+	if !Has(v) {
 		t.Fatal("resource expected to have handle")
 	}
-
-	h := GetHandle(v)
+	h := Get(v)
 	if h.Prefix() != "res" {
 		t.Fatal("resource handle expected to have prefix 'res'")
 	}
@@ -27,7 +25,7 @@ func TestResource(t *testing.T) {
 		t.Fatal("resource handle expected to have non-empty id")
 	}
 
-	nh := NewHandle("res")
+	nh := New("res")
 	if nh.Prefix() != "res" {
 		t.Fatal("new handle expected to have prefix 'res'")
 	}
@@ -35,27 +33,27 @@ func TestResource(t *testing.T) {
 		t.Fatal("new handle expected to have non-empty id")
 	}
 
-	SetHandle(v, "")
-	if GetHandle(v).Prefix() != "res" {
+	Set(&v, "")
+	if Get(v).Prefix() != "res" {
 		t.Fatal("set handle expected to have prefix 'res'")
 	}
-	if GetHandle(v).ID() != "" {
+	if Get(v).ID() != "" {
 		t.Fatal("set handle expected to have empty id")
 	}
 
-	SetHandle(v, "123")
-	if GetHandle(v).Prefix() != "res" {
+	Set(&v, "123")
+	if Get(v).Prefix() != "res" {
 		t.Fatal("set handle expected to have prefix 'res'")
 	}
-	if GetHandle(v).ID() != "123" {
+	if Get(v).ID() != "123" {
 		t.Fatal("set handle expected to have id '123'")
 	}
 
-	SetHandle(v, "res:123")
-	if GetHandle(v).Prefix() != "res" {
+	Set(&v, "res:123")
+	if Get(v).Prefix() != "res" {
 		t.Fatal("set handle expected to have prefix 'res'")
 	}
-	if GetHandle(v).ID() != "123" {
+	if Get(v).ID() != "123" {
 		t.Fatal("set handle expected to have id '123'")
 	}
 

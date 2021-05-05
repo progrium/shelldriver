@@ -3,13 +3,13 @@ package main
 import (
 	"runtime"
 
-	"github.com/progrium/macbridge/pkg/bridge"
+	"github.com/progrium/macbridge/bridge"
 )
 
-const Version = "0.0.2"
+const Version = "0.0.3a"
 
 func main() {
 	println("starting macbridge", Version)
 	runtime.LockOSThread()
-	bridge.Run()
+	bridge.New().Run()
 }

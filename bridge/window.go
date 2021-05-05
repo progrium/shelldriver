@@ -3,7 +3,8 @@ package bridge
 import (
 	"encoding/base64"
 
-	"github.com/progrium/macbridge/pkg/bridge/resource"
+	"github.com/progrium/macbridge/handle"
+	"github.com/progrium/macbridge/res"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/core"
 	"github.com/progrium/macdriver/objc"
@@ -11,15 +12,15 @@ import (
 )
 
 type Window struct {
-	*resource.Handle `prefix:"win"`
+	*handle.Handle `prefix:"win"`
 
 	Title        string
-	Position     Point
-	Size         Size
+	Position     res.Point
+	Size         res.Size
 	Closable     bool
 	Minimizable  bool
 	Resizable    bool
-	Background   *Color
+	Background   *res.Color
 	Borderless   bool
 	CornerRadius float64
 	AlwaysOnTop  bool
@@ -109,7 +110,7 @@ func (w *Window) Apply(target objc.Object) (objc.Object, error) {
 		obj.SetOpaque(false)
 		v := cocoa.NSView_Init(core.Rect(0, 0, 0, 0))
 		if w.Background != nil {
-			v.SetBackgroundColor(w.Background.NSColor())
+			v.SetBackgroundColor(NSColor(w.Background))
 		}
 		v.SetWantsLayer(true)
 		v.Layer().SetCornerRadius(w.CornerRadius)
@@ -120,7 +121,7 @@ func (w *Window) Apply(target objc.Object) (objc.Object, error) {
 		obj.SetContentView(v)
 	} else {
 		if w.Background != nil {
-			obj.SetBackgroundColor(w.Background.NSColor())
+			obj.SetBackgroundColor(NSColor(w.Background))
 			obj.SetOpaque(w.Background.A == 1)
 		}
 		if w.webview != nil {

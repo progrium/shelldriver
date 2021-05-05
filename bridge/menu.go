@@ -2,19 +2,15 @@ package bridge
 
 import (
 	"encoding/base64"
-	"fmt"
-	"os"
 
-	"github.com/manifold/qtalk/golang/rpc"
-	"github.com/progrium/macbridge/pkg/bridge/resource"
+	"github.com/progrium/macbridge/handle"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/core"
 	"github.com/progrium/macdriver/objc"
-	"github.com/rs/xid"
 )
 
 type Menu struct {
-	*resource.Handle `prefix:"men"`
+	*handle.Handle `prefix:"men"`
 
 	Icon    string
 	Title   string
@@ -34,44 +30,8 @@ func (m *Menu) Apply(target objc.Object) (objc.Object, error) {
 	return target, nil
 }
 
-type rpc_FuncExport struct {
-	Ptr    string `json:"$fnptr" mapstructure:"$fnptr"`
-	Caller rpc.Caller
-	fn     interface{}
-}
-
-func (e *rpc_FuncExport) Call(args, reply interface{}) error {
-	_, err := e.Caller.Call("Invoke", e.Ptr, reply)
-	return err
-}
-
-func (e *rpc_FuncExport) Callback() (objc.Object, objc.Selector) {
-	ee := *e
-	return core.Callback(func(o objc.Object) {
-		err := ee.Call(nil, nil)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "callback: %v\n", err)
-		}
-	})
-}
-
-var exportedFuncs map[string]rpc_FuncExport
-
-func ExportFunc(fn interface{}) *rpc_FuncExport {
-	if exportedFuncs == nil {
-		exportedFuncs = make(map[string]rpc_FuncExport)
-	}
-	id := xid.New().String()
-	ef := rpc_FuncExport{
-		Ptr: id,
-		fn:  fn,
-	}
-	exportedFuncs[id] = ef
-	return &ef
-}
-
 type MenuItem struct {
-	*resource.Handle `prefix:"mit"`
+	*handle.Handle `prefix:"mit"`
 
 	Title     string
 	Icon      string
@@ -80,7 +40,7 @@ type MenuItem struct {
 	Enabled   bool
 	Checked   bool
 
-	OnClick *rpc_FuncExport
+	//OnClick *rpc_FuncExport
 	// TODO: submenus
 }
 
@@ -108,10 +68,10 @@ func (i *MenuItem) NSMenuItem() cocoa.NSMenuItem {
 		obj.SetTarget(cocoa.NSApp())
 		obj.SetAction(objc.Sel("terminate:"))
 	}
-	if i.OnClick != nil && i.OnClick.Caller != nil {
-		t, sel := i.OnClick.Callback()
-		obj.SetTarget(t)
-		obj.SetAction(sel)
-	}
+	// if i.OnClick != nil && i.OnClick.Caller != nil {
+	// 	t, sel := i.OnClick.Callback()
+	// 	obj.SetTarget(t)
+	// 	obj.SetAction(sel)
+	// }
 	return obj
 }

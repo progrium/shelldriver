@@ -1,4 +1,4 @@
-package bridge
+package res
 
 import (
 	"context"
@@ -10,17 +10,21 @@ import (
 	"github.com/manifold/qtalk/golang/rpc"
 )
 
-type Host struct {
+type Manager struct {
 	Cmd  *exec.Cmd
 	Pipe io.ReadWriteCloser
 	Peer *rpc.Peer
 }
 
-func (h *Host) Run() error {
-	return h.Cmd.Run()
+func (m *Manager) Start() error {
+	return m.Cmd.Start()
 }
 
-func NewHost(stderr io.Writer) (*Host, error) {
+func (m *Manager) Wait() error {
+	return m.Cmd.Wait()
+}
+
+func NewManager(stderr io.Writer) (*Manager, error) {
 	bridgecmd := os.Getenv("BRIDGECMD")
 	if bridgecmd == "" {
 		bridgecmd = "macbridge"
@@ -40,5 +44,5 @@ func NewHost(stderr io.Writer) (*Host, error) {
 		io.Reader
 	}{wc, rc}
 	session := mux.NewSession(context.Background(), pipe)
-	return &Host{Cmd: cmd, Pipe: pipe, Peer: rpc.NewPeer(session, rpc.JSONCodec{})}, nil
+	return &Manager{Cmd: cmd, Pipe: pipe, Peer: rpc.NewPeer(session, rpc.JSONCodec{})}, nil
 }
