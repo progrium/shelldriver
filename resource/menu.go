@@ -1,11 +1,11 @@
-package res
+package resource
 
 import (
 	"github.com/progrium/macbridge/handle"
 )
 
 type Menu struct {
-	*handle.Handle `prefix:"men"`
+	handle.Handle
 
 	Icon    string
 	Title   string
@@ -14,7 +14,7 @@ type Menu struct {
 }
 
 type MenuItem struct {
-	*handle.Handle `prefix:"mit"`
+	handle.Handle
 
 	Title     string
 	Icon      string

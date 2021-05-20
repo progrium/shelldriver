@@ -1,13 +1,15 @@
-package res
+package resource
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
 
 	"github.com/manifold/qtalk/golang/mux"
 	"github.com/manifold/qtalk/golang/rpc"
+	"github.com/progrium/macbridge/handle"
 )
 
 type Manager struct {
@@ -45,4 +47,29 @@ func NewManager(stderr io.Writer) (*Manager, error) {
 	}{wc, rc}
 	session := mux.NewSession(context.Background(), pipe)
 	return &Manager{Cmd: cmd, Pipe: pipe, Peer: rpc.NewPeer(session, rpc.JSONCodec{})}, nil
+}
+
+func (m *Manager) Sync(v interface{}) error {
+	if !handle.Has(v) {
+		return fmt.Errorf("not a resource")
+	}
+	var h string
+	_, err := m.Peer.Call("Sync", v, &h)
+	handle.Set(v, h)
+	return err
+}
+
+func (m *Manager) Release(v interface{}) error {
+	if !handle.Has(v) {
+		return fmt.Errorf("not a resource")
+	}
+	h := handle.Get(v)
+	if h.Unset() {
+		return fmt.Errorf("unable to release an unset resource handle")
+	}
+	_, err := m.Peer.Call("Release", h, nil)
+	if err == nil {
+		handle.Set(v, "")
+	}
+	return err
 }

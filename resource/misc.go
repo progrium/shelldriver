@@ -1,4 +1,4 @@
-package res
+package resource
 
 type Point struct {
 	X float64

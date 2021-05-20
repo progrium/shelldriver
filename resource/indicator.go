@@ -1,11 +1,11 @@
-package res
+package resource
 
 import (
 	"github.com/progrium/macbridge/handle"
 )
 
 type Indicator struct {
-	*handle.Handle `prefix:"ind"`
+	handle.Handle
 
 	Icon string
 	Text string

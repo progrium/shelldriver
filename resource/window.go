@@ -1,9 +1,9 @@
-package res
+package resource
 
 import "github.com/progrium/macbridge/handle"
 
 type Window struct {
-	*handle.Handle `prefix:"win"`
+	handle.Handle
 
 	Title        string
 	Position     Point
