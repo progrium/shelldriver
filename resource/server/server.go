@@ -1,4 +1,4 @@
-package bridge
+package server
 
 import (
 	"context"
@@ -11,13 +11,14 @@ import (
 	"github.com/manifold/qtalk/golang/mux"
 	"github.com/manifold/qtalk/golang/rpc"
 	"github.com/mitchellh/mapstructure"
+	"github.com/progrium/macbridge/bridge"
 	"github.com/progrium/macbridge/handle"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/core"
 	"github.com/progrium/macdriver/objc"
 )
 
-type Bridge struct {
+type Server struct {
 	Resources []interface{}
 	Types     map[string]reflect.Type
 
@@ -27,19 +28,19 @@ type Bridge struct {
 	sync.Mutex
 }
 
-func New() *Bridge {
-	b := &Bridge{
+func New() *Server {
+	b := &Server{
 		Types:    make(map[string]reflect.Type),
 		objects:  make(map[handle.Handle]objc.Object),
 		released: make(map[handle.Handle]bool),
 	}
-	b.Register(Window{})
-	b.Register(Indicator{})
-	b.Register(Menu{})
+	b.Register(&bridge.Indicator{})
+	b.Register(&bridge.Menu{})
+	b.Register(&bridge.Window{})
 	return b
 }
 
-func (b *Bridge) Run() {
+func (b *Server) Run() {
 	app := cocoa.NSApp_WithDidLaunch(func(n objc.Object) {
 		session := mux.NewSession(context.Background(), struct {
 			io.ReadCloser
@@ -50,33 +51,32 @@ func (b *Bridge) Run() {
 		peer.Bind("Release", b.Release)
 		go peer.Respond()
 	})
-	app.SetActivationPolicy(cocoa.NSApplicationActivationPolicyRegular)
+	app.SetActivationPolicy(cocoa.NSApplicationActivationPolicyAccessory)
 	app.ActivateIgnoringOtherApps(true)
 	app.Run()
 }
 
-func (b *Bridge) Log(v ...interface{}) {
+func (b *Server) Log(v ...interface{}) {
 	fmt.Fprintln(os.Stderr, v...)
 }
 
-func (b *Bridge) Register(v interface{}) {
-	rv := reflect.Indirect(reflect.ValueOf(v))
-	prefix := rv.Type().Field(0).Tag.Get("prefix")
-	b.Types[prefix] = rv.Type()
+func (b *Server) Register(v interface{}) {
+	h := handle.Get(v)
+	b.Types[h.Type()] = reflect.TypeOf(v).Elem()
 }
 
-func (b *Bridge) New(prefix string) interface{} {
-	t, ok := b.Types[prefix]
+func (b *Server) New(typ string) interface{} {
+	t, ok := b.Types[typ]
 	if !ok {
-		panic("resource type not registered: " + prefix)
+		panic("resource type not registered: " + typ)
 	}
-	h := handle.New(prefix)
 	r := reflect.New(t).Interface()
+	h := handle.NewFor(r)
 	handle.Set(r, h.Handle())
 	return r
 }
 
-func (b *Bridge) Release(hstr string) (err error) {
+func (b *Server) Release(hstr string) (err error) {
 	b.Lock()
 	h := handle.Handle(hstr)
 	b.released[h] = true
@@ -89,11 +89,14 @@ func (b *Bridge) Release(hstr string) (err error) {
 	return nil
 }
 
-func (s *Bridge) Sync(hstr string, patch map[string]interface{}, call *rpc.Call) (handle.Handle, error) {
+func (s *Server) Sync(res map[string]interface{}, call *rpc.Call) (handle.Handle, error) {
 	s.Lock()
-	h := handle.Handle(hstr)
+	h := handle.Handle(res["Handle"].(string))
+	if h.Type() == "" {
+		panic("invalid handle")
+	}
 
-	Walk(patch, func(v, p reflect.Value, path []string) error {
+	Walk(res, func(v, p reflect.Value, path []string) error {
 		if path[len(path)-1] == "$fnptr" {
 			p.SetMapIndex(reflect.ValueOf("Caller"), reflect.ValueOf(call.Caller))
 		}
@@ -104,15 +107,23 @@ func (s *Bridge) Sync(hstr string, patch map[string]interface{}, call *rpc.Call)
 	if err != nil {
 		return h, err
 	}
+	var r interface{}
 	if !v.IsValid() {
-		v = reflect.ValueOf(s.New(h.Prefix()))
-		handle.Set(v.Interface(), h.Handle())
-		delete(patch, "Handle")
+		v = reflect.ValueOf(s.New(h.Type()))
+		rv, ok := v.Interface().(handle.Resourcer)
+		if !ok {
+			panic("not a resource")
+		}
+		_, r = rv.Resource()
+		handle.Set(r, handle.NewFor(r).Handle())
+		delete(res, "Handle")
 	}
-	if err := mapstructure.Decode(patch, v.Interface()); err != nil {
+	if err := mapstructure.Decode(res, r); err != nil {
 		return h, err
 	}
 	s.Resources = append(s.Resources, v.Interface())
+
+	println(fmt.Sprintf("%#v", s.Resources[0]))
 
 	core.Dispatch(func() {
 		if err := s.Reconcile(); err != nil {
@@ -123,13 +134,13 @@ func (s *Bridge) Sync(hstr string, patch map[string]interface{}, call *rpc.Call)
 	return h, err
 }
 
-func (s *Bridge) Lookup(h handle.Handle) (found reflect.Value, err error) {
+func (s *Server) Lookup(h handle.Handle) (found reflect.Value, err error) {
 	for _, r := range s.Resources {
 		if !handle.Has(r) {
 			continue
 		}
 		hh := handle.Get(r)
-		if hh != nil && *hh == h {
+		if !hh.Unset() && hh == h {
 			found = reflect.ValueOf(r)
 			return found, err
 		}
@@ -137,15 +148,15 @@ func (s *Bridge) Lookup(h handle.Handle) (found reflect.Value, err error) {
 	return found, err
 }
 
-func (s *Bridge) Reconcile() error {
+func (s *Server) Reconcile() error {
 	for _, r := range s.Resources {
 		if !handle.Has(r) {
 			continue
 		}
 		h := handle.Get(r)
-		if h != nil {
-			target, exists := s.objects[*h]
-			if s.released[*h] {
+		if !h.Unset() {
+			target, exists := s.objects[h]
+			if s.released[h] {
 				// if in released but not in objects,
 				// its stale state that should have been cleaned up
 				// so we will ignore it here
@@ -159,7 +170,7 @@ func (s *Bridge) Reconcile() error {
 						return err
 					}
 				}
-				delete(s.objects, *h)
+				delete(s.objects, h)
 				continue
 			}
 			ra, ok := r.(Applier)
@@ -169,7 +180,7 @@ func (s *Bridge) Reconcile() error {
 				if err != nil {
 					return err
 				}
-				s.objects[*h] = target
+				s.objects[h] = target
 			}
 		}
 	}

@@ -3,13 +3,13 @@ package main
 import (
 	"runtime"
 
-	"github.com/progrium/macbridge/bridge"
+	"github.com/progrium/macbridge/resource/server"
 )
 
-const Version = "0.0.3a"
+const Version = "0.0.4"
 
 func main() {
-	println("starting macbridge", Version)
+	println("starting sdbridge", Version)
 	runtime.LockOSThread()
-	bridge.New().Run()
+	server.New().Run()
 }

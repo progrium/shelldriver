@@ -9,6 +9,7 @@ import (
 	"github.com/manifold/qtalk/golang/mux"
 	"github.com/manifold/qtalk/golang/rpc"
 	"github.com/progrium/macbridge/handle"
+	"github.com/progrium/macbridge/shell"
 )
 
 func mockServer() (io.Reader, io.WriteCloser) {
@@ -48,7 +49,7 @@ func TestSyncRelease(t *testing.T) {
 		Peer: rpc.NewPeer(session, rpc.JSONCodec{}),
 	}
 
-	m := &Menu{
+	m := &shell.Menu{
 		Icon:  "icon",
 		Title: "title",
 	}

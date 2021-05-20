@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 
 	"github.com/progrium/macbridge/handle"
-	"github.com/progrium/macbridge/res"
+	"github.com/progrium/macbridge/shell"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/core"
 	"github.com/progrium/macdriver/objc"
@@ -12,25 +12,14 @@ import (
 )
 
 type Window struct {
-	*handle.Handle `prefix:"win"`
-
-	Title        string
-	Position     res.Point
-	Size         res.Size
-	Closable     bool
-	Minimizable  bool
-	Resizable    bool
-	Background   *res.Color
-	Borderless   bool
-	CornerRadius float64
-	AlwaysOnTop  bool
-	IgnoreMouse  bool
-	Center       bool
-	URL          string
-	Image        string
+	shell.Window
 
 	webview *webkit.WKWebView
 	image   *cocoa.NSImage
+}
+
+func (w *Window) Resource() (*handle.Handle, interface{}) {
+	return &w.Handle, &w.Window
 }
 
 func (w *Window) Discard(target objc.Object) error {

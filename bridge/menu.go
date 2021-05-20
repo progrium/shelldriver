@@ -4,18 +4,18 @@ import (
 	"encoding/base64"
 
 	"github.com/progrium/macbridge/handle"
+	"github.com/progrium/macbridge/shell"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/core"
 	"github.com/progrium/macdriver/objc"
 )
 
 type Menu struct {
-	*handle.Handle `prefix:"men"`
+	shell.Menu
+}
 
-	Icon    string
-	Title   string
-	Tooltip string
-	Items   []MenuItem
+func (m *Menu) Resource() (*handle.Handle, interface{}) {
+	return &m.Handle, &m.Menu
 }
 
 func (m *Menu) Apply(target objc.Object) (objc.Object, error) {
@@ -23,28 +23,14 @@ func (m *Menu) Apply(target objc.Object) (objc.Object, error) {
 		menu := cocoa.NSMenu_New()
 		menu.SetAutoenablesItems(true)
 		for _, i := range m.Items {
-			menu.AddItem(i.NSMenuItem())
+			menu.AddItem(NSMenuItem(i))
 		}
 		target = menu.Object
 	}
 	return target, nil
 }
 
-type MenuItem struct {
-	*handle.Handle `prefix:"mit"`
-
-	Title     string
-	Icon      string
-	Tooltip   string
-	Separator bool
-	Enabled   bool
-	Checked   bool
-
-	//OnClick *rpc_FuncExport
-	// TODO: submenus
-}
-
-func (i *MenuItem) NSMenuItem() cocoa.NSMenuItem {
+func NSMenuItem(i shell.MenuItem) cocoa.NSMenuItem {
 	if i.Separator {
 		return cocoa.NSMenuItem_Separator()
 	}

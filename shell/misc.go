@@ -1,4 +1,4 @@
-package resource
+package shell
 
 type Point struct {
 	X float64

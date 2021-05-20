@@ -1,4 +1,4 @@
-package resource
+package shell
 
 import (
 	"github.com/progrium/macbridge/handle"

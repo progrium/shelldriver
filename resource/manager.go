@@ -29,7 +29,7 @@ func (m *Manager) Wait() error {
 func NewManager(stderr io.Writer) (*Manager, error) {
 	bridgecmd := os.Getenv("BRIDGECMD")
 	if bridgecmd == "" {
-		bridgecmd = "macbridge"
+		bridgecmd = "sdbridge"
 	}
 	cmd := exec.Command(bridgecmd)
 	cmd.Stderr = stderr
@@ -53,8 +53,9 @@ func (m *Manager) Sync(v interface{}) error {
 	if !handle.Has(v) {
 		return fmt.Errorf("not a resource")
 	}
+	handle.Set(v, handle.Get(v).Handle())
 	var h string
-	_, err := m.Peer.Call("Sync", v, &h)
+	_, err := m.Peer.Call("Sync", []interface{}{v}, &h)
 	handle.Set(v, h)
 	return err
 }
