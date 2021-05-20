@@ -8,74 +8,78 @@ import (
 	"github.com/rs/xid"
 )
 
+const Invalid = Handle("")
+
+type Resourcer interface {
+	Resource() (*Handle, interface{})
+}
+
 type Handle string
 
-func (h *Handle) Prefix() string {
-	if h == nil {
-		return ""
-	}
-	parts := strings.Split(string(*h), ":")
+func (h Handle) Type() string {
+	parts := strings.Split(string(h), ":")
 	return parts[0]
 }
 
-func (h *Handle) ID() string {
-	if h == nil {
-		return ""
-	}
-	parts := strings.Split(string(*h), ":")
+func (h Handle) ID() string {
+	parts := strings.Split(string(h), ":")
 	if len(parts) > 1 {
 		return parts[1]
 	}
 	return ""
 }
 
-func (h *Handle) Handle() string {
-	if h == nil {
-		return ""
-	}
-	return string(*h)
+func (h Handle) Unset() bool {
+	return h.ID() == ""
 }
 
-func New(prefix string) *Handle {
-	handle := Handle(fmt.Sprintf("%s:%s", prefix, xid.New().String()))
-	return &handle
+func (h Handle) Handle() string {
+	return string(h)
 }
 
-func NewFor(v interface{}) *Handle {
-	return New(prefix(v))
+func New(typ, id string) Handle {
+	return Handle(fmt.Sprintf("%s:%s", typ, id))
+}
+
+func NewFor(v interface{}) Handle {
+	return New(prefix(v), xid.New().String())
 }
 
 func Has(v interface{}) bool {
+	if _, ok := v.(Resourcer); ok {
+		return true
+	}
 	rv := reflect.Indirect(reflect.ValueOf(v))
-	if rv.Kind() == reflect.Struct && rv.Type().NumField() > 0 && rv.Type().Field(0).Name == "Handle" {
+	if rv.Kind() == reflect.Struct && rv.Type().NumField() > 0 &&
+		rv.Type().Field(0).Name == "Handle" && rv.Type().Field(0).Type.Name() == "Handle" {
 		return true
 	}
 	return false
 }
 
-func Get(v interface{}) *Handle {
-	if !Has(v) {
-		return nil
+func Get(v interface{}) (handle Handle) {
+	if r, ok := v.(Resourcer); ok {
+		h, _ := r.Resource()
+		handle = *h
+	} else {
+		rv := reflect.Indirect(reflect.ValueOf(v))
+		h := rv.Field(0).Interface()
+		var ok bool
+		handle, ok = h.(Handle)
+		if !ok {
+			return Invalid
+		}
 	}
-	rv := reflect.Indirect(reflect.ValueOf(v))
-	h := rv.Field(0).Interface()
-	hh, ok := h.(*Handle)
-	if !ok {
-		return nil
+	if handle.Type() == "" {
+		handle = New(prefix(v), "")
 	}
-	if hh.Prefix() == "" {
-		hh = New(prefix(v))
-	}
-	return hh
+	return handle
 }
 
-// if "" => prefix:
-// if id => prefix:id
-// if prefix:id => prefix:id
+// if "" => type:
+// if id => type:id
+// if type:id => type:id
 func Set(v interface{}, h string) {
-	if !Has(v) {
-		return
-	}
 	if !strings.Contains(h, ":") {
 		if h == "" {
 			h = fmt.Sprintf("%s:", prefix(v))
@@ -83,13 +87,22 @@ func Set(v interface{}, h string) {
 			h = fmt.Sprintf("%s:%s", prefix(v), h)
 		}
 	}
-	handle := Handle(h)
-	ptr := reflect.ValueOf(&handle)
-	res := reflect.ValueOf(v)
-	res.Elem().Field(0).Set(ptr)
+	sethandle := Handle(h)
+	if r, ok := v.(Resourcer); ok {
+		h, _ := r.Resource()
+		*h = sethandle
+	} else {
+		ptr := reflect.ValueOf(sethandle)
+		res := reflect.ValueOf(v)
+		res.Elem().Field(0).Set(ptr)
+	}
 }
 
 func prefix(v interface{}) string {
 	rv := reflect.Indirect(reflect.ValueOf(v))
-	return rv.Type().Field(0).Tag.Get("prefix")
+	prefixTag := rv.Type().Field(0).Tag.Get("type")
+	if prefixTag == "" {
+		return rv.Type().Name()
+	}
+	return prefixTag
 }
