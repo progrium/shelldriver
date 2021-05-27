@@ -112,7 +112,7 @@ func (s *Server) Sync(res map[string]interface{}, call *rpc.Call) (handle.Handle
 		v = reflect.ValueOf(s.New(h.Type()))
 		rv, ok := v.Interface().(handle.Resourcer)
 		if !ok {
-			panic("not a resource")
+			panic("sync: not a resource")
 		}
 		_, r = rv.Resource()
 		handle.Set(r, handle.NewFor(r).Handle())

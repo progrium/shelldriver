@@ -51,7 +51,7 @@ func NewManager(stderr io.Writer) (*Manager, error) {
 
 func (m *Manager) Sync(v interface{}) error {
 	if !handle.Has(v) {
-		return fmt.Errorf("not a resource")
+		return fmt.Errorf("Sync: not a resource")
 	}
 	handle.Set(v, handle.Get(v).Handle())
 	var h string
@@ -62,7 +62,7 @@ func (m *Manager) Sync(v interface{}) error {
 
 func (m *Manager) Release(v interface{}) error {
 	if !handle.Has(v) {
-		return fmt.Errorf("not a resource")
+		return fmt.Errorf("Release: not a resource")
 	}
 	h := handle.Get(v)
 	if h.Unset() {
