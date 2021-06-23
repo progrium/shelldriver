@@ -11,7 +11,7 @@ import (
 const Invalid = Handle("")
 
 type Resourcer interface {
-	Resource() (*Handle, interface{})
+	Resource() interface{}
 }
 
 type Handle string
@@ -29,7 +29,7 @@ func (h Handle) ID() string {
 	return ""
 }
 
-func (h Handle) Unset() bool {
+func (h Handle) IsZero() bool {
 	return h.ID() == ""
 }
 
@@ -59,16 +59,14 @@ func Has(v interface{}) bool {
 
 func Get(v interface{}) (handle Handle) {
 	if r, ok := v.(Resourcer); ok {
-		h, _ := r.Resource()
-		handle = *h
-	} else {
-		rv := reflect.Indirect(reflect.ValueOf(v))
-		h := rv.Field(0).Interface()
-		var ok bool
-		handle, ok = h.(Handle)
-		if !ok {
-			return Invalid
-		}
+		v = r.Resource()
+	}
+	rv := reflect.Indirect(reflect.ValueOf(v))
+	h := rv.Field(0).Interface()
+	var ok bool
+	handle, ok = h.(Handle)
+	if !ok {
+		return Invalid
 	}
 	if handle.Type() == "" {
 		handle = New(prefix(v), "")
@@ -80,6 +78,10 @@ func Get(v interface{}) (handle Handle) {
 // if id => type:id
 // if type:id => type:id
 func Set(v interface{}, h string) {
+	if r, ok := v.(Resourcer); ok {
+		Set(r.Resource(), h)
+		return
+	}
 	if !strings.Contains(h, ":") {
 		if h == "" {
 			h = fmt.Sprintf("%s:", prefix(v))
@@ -87,15 +89,10 @@ func Set(v interface{}, h string) {
 			h = fmt.Sprintf("%s:%s", prefix(v), h)
 		}
 	}
-	sethandle := Handle(h)
-	if r, ok := v.(Resourcer); ok {
-		h, _ := r.Resource()
-		*h = sethandle
-	} else {
-		ptr := reflect.ValueOf(sethandle)
-		res := reflect.ValueOf(v)
-		res.Elem().Field(0).Set(ptr)
-	}
+	handle := Handle(h)
+	rhandle := reflect.ValueOf(handle)
+	res := reflect.ValueOf(v)
+	res.Elem().Field(0).Set(rhandle)
 }
 
 func prefix(v interface{}) string {

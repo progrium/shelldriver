@@ -1,4 +1,4 @@
 
-test:
+demo:
 	go install ./cmd/...
-	go run ./_examples/bridgehost/main.go
+	go run ./_examples/demo/main.go

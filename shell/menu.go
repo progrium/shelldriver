@@ -2,6 +2,7 @@ package shell
 
 import (
 	"github.com/progrium/macbridge/handle"
+	"github.com/progrium/qtalk-go/fn"
 )
 
 type Menu struct {
@@ -14,8 +15,6 @@ type Menu struct {
 }
 
 type MenuItem struct {
-	handle.Handle
-
 	Title     string
 	Icon      string
 	Tooltip   string
@@ -23,6 +22,6 @@ type MenuItem struct {
 	Enabled   bool
 	Checked   bool
 
-	//OnClick *rpc_FuncExport
-	// TODO: submenus
+	OnClick  *fn.Ptr
+	SubItems []MenuItem
 }

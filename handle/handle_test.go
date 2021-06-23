@@ -25,8 +25,8 @@ type EmbeddedFake struct {
 	Fake
 }
 
-func (ef *EmbeddedFake) Resource() (*Handle, interface{}) {
-	return &ef.Fake.Handle, ef.Fake
+func (ef *EmbeddedFake) Resource() interface{} {
+	return &ef.Fake
 }
 
 func TestEmbedded(t *testing.T) {
@@ -37,8 +37,8 @@ func TestEmbedded(t *testing.T) {
 	}
 
 	h := Get(v)
-	if !h.Unset() {
-		t.Fatal("resource expected to not be set")
+	if !h.IsZero() {
+		t.Fatal("resource handle expected to be zero")
 	}
 
 	Set(v, "123")
@@ -73,8 +73,8 @@ func TestUnnamedHandle(t *testing.T) {
 	}
 
 	h := Get(v)
-	if !h.Unset() {
-		t.Fatal("resource expected to not be set")
+	if !h.IsZero() {
+		t.Fatal("resource handle expected to be zero")
 	}
 
 	Set(v, "123")
@@ -97,8 +97,8 @@ func TestHandle(t *testing.T) {
 		t.Fatal("resource expected to have handle")
 	}
 	h := Get(v)
-	if !h.Unset() {
-		t.Fatal("resource expected to not be set")
+	if !h.IsZero() {
+		t.Fatal("resource handle expected to be zero")
 	}
 
 	nh := New("res", "")
