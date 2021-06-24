@@ -1,4 +1,4 @@
-module github.com/progrium/macbridge
+module github.com/progrium/shelldriver
 
 go 1.16
 
