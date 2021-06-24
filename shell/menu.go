@@ -1,8 +1,8 @@
 package shell
 
 import (
-	"github.com/progrium/macbridge/handle"
 	"github.com/progrium/qtalk-go/fn"
+	"github.com/progrium/shelldriver/handle"
 )
 
 type Menu struct {

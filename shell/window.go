@@ -1,6 +1,6 @@
 package shell
 
-import "github.com/progrium/macbridge/handle"
+import "github.com/progrium/shelldriver/handle"
 
 type Window struct {
 	handle.Handle

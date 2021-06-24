@@ -1,7 +1,7 @@
 package shell
 
 import (
-	"github.com/progrium/macbridge/handle"
+	"github.com/progrium/shelldriver/handle"
 )
 
 type Indicator struct {

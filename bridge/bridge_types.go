@@ -3,7 +3,7 @@ package bridge
 import (
 	"reflect"
 
-	"github.com/progrium/macbridge/handle"
+	"github.com/progrium/shelldriver/handle"
 )
 
 var types map[string]reflect.Type

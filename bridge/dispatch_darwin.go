@@ -1,7 +1,7 @@
 package bridge
 
 import (
-	"github.com/progrium/macbridge/dispatch"
+	"github.com/progrium/shelldriver/dispatch"
 )
 
 // Dispatch uses the shell API to schedule work in the main UI thread

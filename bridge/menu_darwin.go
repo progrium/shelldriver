@@ -3,10 +3,10 @@ package bridge
 import (
 	"encoding/base64"
 
-	"github.com/progrium/macbridge/shell"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/macdriver/core"
 	"github.com/progrium/macdriver/objc"
+	"github.com/progrium/shelldriver/shell"
 )
 
 func init() {

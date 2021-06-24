@@ -5,11 +5,11 @@ import (
 	"io"
 	"testing"
 
-	"github.com/progrium/macbridge/handle"
-	"github.com/progrium/macbridge/shell"
 	"github.com/progrium/qtalk-go/codec"
 	"github.com/progrium/qtalk-go/rpc"
 	"github.com/progrium/qtalk-go/transport/qmux"
+	"github.com/progrium/shelldriver/handle"
+	"github.com/progrium/shelldriver/shell"
 )
 
 func TestServer(t *testing.T) {

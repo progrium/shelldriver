@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/progrium/macbridge/shell"
 	"github.com/progrium/qtalk-go/fn"
+	"github.com/progrium/shelldriver/shell"
 )
 
 func must(err error) {

@@ -7,10 +7,10 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/progrium/macbridge/handle"
-	"github.com/progrium/macbridge/shell"
 	"github.com/progrium/macdriver/cocoa"
 	"github.com/progrium/qtalk-go/fn"
+	"github.com/progrium/shelldriver/handle"
+	"github.com/progrium/shelldriver/shell"
 )
 
 func init() {

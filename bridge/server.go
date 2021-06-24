@@ -3,10 +3,10 @@ package bridge
 import (
 	"errors"
 
-	"github.com/progrium/macbridge/handle"
 	"github.com/progrium/qtalk-go/codec"
 	"github.com/progrium/qtalk-go/fn"
 	"github.com/progrium/qtalk-go/rpc"
+	"github.com/progrium/shelldriver/handle"
 )
 
 func NewServer() *rpc.Server {

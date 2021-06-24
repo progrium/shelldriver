@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/progrium/macbridge/handle"
+	"github.com/progrium/shelldriver/handle"
 )
 
 type Resource interface {

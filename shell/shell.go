@@ -8,12 +8,12 @@ import (
 	"os/exec"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/progrium/macbridge/handle"
 	"github.com/progrium/qtalk-go/codec"
 	"github.com/progrium/qtalk-go/fn"
 	"github.com/progrium/qtalk-go/peer"
 	"github.com/progrium/qtalk-go/transport"
 	"github.com/progrium/qtalk-go/transport/qmux"
+	"github.com/progrium/shelldriver/handle"
 )
 
 type Shell struct {
