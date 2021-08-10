@@ -10,9 +10,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/progrium/qtalk-go/codec"
 	"github.com/progrium/qtalk-go/fn"
+	"github.com/progrium/qtalk-go/mux"
 	"github.com/progrium/qtalk-go/peer"
 	"github.com/progrium/qtalk-go/transport"
-	"github.com/progrium/qtalk-go/transport/qmux"
 	"github.com/progrium/shelldriver/handle"
 )
 
@@ -22,7 +22,7 @@ type Shell struct {
 	cmd   *exec.Cmd
 }
 
-func New(sess transport.Session) *Shell {
+func New(sess *mux.Session) *Shell {
 	var cmd *exec.Cmd
 	if sess == nil {
 		var err error
@@ -39,7 +39,7 @@ func New(sess transport.Session) *Shell {
 		if err != nil {
 			panic(err)
 		}
-		sess, err = qmux.DialIO(wc, rc)
+		sess, err = transport.DialIO(wc, rc)
 		if err != nil {
 			panic(err)
 		}

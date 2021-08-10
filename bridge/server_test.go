@@ -7,7 +7,7 @@ import (
 
 	"github.com/progrium/qtalk-go/codec"
 	"github.com/progrium/qtalk-go/rpc"
-	"github.com/progrium/qtalk-go/transport/qmux"
+	"github.com/progrium/qtalk-go/transport"
 	"github.com/progrium/shelldriver/handle"
 	"github.com/progrium/shelldriver/shell"
 )
@@ -15,8 +15,8 @@ import (
 func TestServer(t *testing.T) {
 	ar, bw := io.Pipe()
 	br, aw := io.Pipe()
-	sessA, _ := qmux.DialIO(aw, ar)
-	sessB, _ := qmux.DialIO(bw, br)
+	sessA, _ := transport.DialIO(aw, ar)
+	sessB, _ := transport.DialIO(bw, br)
 
 	srv := NewServer()
 	go srv.Respond(sessA)

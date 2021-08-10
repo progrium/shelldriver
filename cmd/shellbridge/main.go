@@ -7,7 +7,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/progrium/qtalk-go/transport/qmux"
+	"github.com/progrium/qtalk-go/transport"
 	"github.com/progrium/shelldriver/bridge"
 )
 
@@ -25,7 +25,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "shellbridge %s\n", Version)
 	}
 
-	sess, err := qmux.DialIO(os.Stdout, os.Stdin)
+	sess, err := transport.DialIO(os.Stdout, os.Stdin)
 	if err != nil {
 		log.Fatal(err)
 	}
