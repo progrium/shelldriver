@@ -11,14 +11,13 @@ import (
 	"github.com/progrium/qtalk-go/codec"
 	"github.com/progrium/qtalk-go/fn"
 	"github.com/progrium/qtalk-go/mux"
-	"github.com/progrium/qtalk-go/peer"
-	"github.com/progrium/qtalk-go/transport"
+	"github.com/progrium/qtalk-go/talk"
 	"github.com/progrium/shelldriver/handle"
 )
 
 type Shell struct {
 	Debug io.Writer
-	peer  *peer.Peer
+	peer  *talk.Peer
 	cmd   *exec.Cmd
 }
 
@@ -39,13 +38,13 @@ func New(sess *mux.Session) *Shell {
 		if err != nil {
 			panic(err)
 		}
-		sess, err = transport.DialIO(wc, rc)
+		sess, err = mux.DialIO(wc, rc)
 		if err != nil {
 			panic(err)
 		}
 	}
 	return &Shell{
-		peer: peer.New(sess, codec.JSONCodec{}),
+		peer: talk.NewPeer(sess, codec.JSONCodec{}),
 		cmd:  cmd,
 	}
 }
