@@ -7,6 +7,8 @@ github.com/progrium/macdriver v0.0.2 h1:+xHcfZ4Ggpc68InlZ9BnDJdbxxE5essolTxp+aon
 github.com/progrium/macdriver v0.0.2/go.mod h1:9sPyjQ2zVExbC7I5tL3GPzyaet/cS3o4g8Ht2JcYuRk=
 github.com/progrium/qtalk-go v0.0.0-20210817225420-97de0bf25f47 h1:b6WC1KlSvqfwhtQzmljuIyhYCYCgtNTu67EQhdMZwTk=
 github.com/progrium/qtalk-go v0.0.0-20210817225420-97de0bf25f47/go.mod h1:vBfnZmpi9OTX/xNKQ6VOeq6uiaG3B4mhXI39K62bvn8=
+github.com/progrium/qtalk-go v0.5.1-0.20211011215258-537841dc2464 h1:jRCiBZZvLllB1Ag7+7w9dEc4cpKC3x5vwOnM6qKE1Jo=
+github.com/progrium/qtalk-go v0.5.1-0.20211011215258-537841dc2464/go.mod h1:vBfnZmpi9OTX/xNKQ6VOeq6uiaG3B4mhXI39K62bvn8=
 github.com/progrium/watcher v1.0.7/go.mod h1:JQYLbWpkvkx6EDYKgqn4Tv5zwhRXe9a+MQw1wnmcyvI=
 github.com/rs/xid v1.2.1/go.mod h1:+uKXf+4Djp6Md1KODXJxgGQPKngRmWyn10oCKFzNHOQ=
 github.com/rs/xid v1.3.0 h1:6NjYksEUlhurdVehpc7S7dk6DAmcKv8V9gG0FsVN2U4=
