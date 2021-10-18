@@ -72,7 +72,7 @@ func (w *Window) Apply() error {
 	}
 
 	// Closabe, Minimizable, Borderless, Resizable
-	mask := cocoa.NSTitledWindowMask
+	mask := uint(cocoa.NSTitledWindowMask)
 	needsTitleBar := w.Closable || w.Minimizable
 	if w.Borderless {
 		if !needsTitleBar {
