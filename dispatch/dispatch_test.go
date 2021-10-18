@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 
 func TestAsync(t *testing.T) {
 	ok := make(chan bool)
-	Async(MainQueue(), func() {
+	Async(func() {
 		ok <- true
 	})
 	<-ok
@@ -33,7 +33,7 @@ func TestAsync(t *testing.T) {
 
 func TestSync(t *testing.T) {
 	var ok bool
-	Sync(MainQueue(), func() {
+	Sync(func() {
 		ok = true
 	})
 	if !ok {
@@ -43,7 +43,7 @@ func TestSync(t *testing.T) {
 
 func TestDo(t *testing.T) {
 	err := errors.New("test")
-	d := Do(MainQueue(), func() error {
+	d := Do(func() error {
 		return err
 	})
 	ret := d.Wait()

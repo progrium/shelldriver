@@ -24,20 +24,15 @@ func init() {
 	dispatchQueue = make(chan func(), 1)
 }
 
-type Queue unsafe.Pointer
-
-func MainQueue() Queue {
-	return Queue(C.dispatch_get_main_queue())
-}
-
-func Async(queue Queue, fn func()) {
+func Async(fn func()) {
 	dispatchQueue <- fn
+	queue := C.dispatch_get_main_queue()
 	C.dispatch_async_signal(unsafe.Pointer(queue))
 }
 
-func Sync(queue Queue, fn func()) {
+func Sync(fn func()) {
 	done := make(chan struct{})
-	Async(queue, func() {
+	Async(func() {
 		fn()
 		done <- struct{}{}
 	})
@@ -52,9 +47,9 @@ func (d Dispatched) Wait() error {
 	return <-d.err
 }
 
-func Do(queue Queue, fn func() error) Dispatched {
+func Do(fn func() error) Dispatched {
 	d := Dispatched{err: make(chan error, 1)}
-	Async(queue, func() {
+	Async(func() {
 		d.err <- fn()
 	})
 	return d
