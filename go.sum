@@ -137,13 +137,11 @@ github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndrE9hABlRI=
-github.com/progrium/macdriver v0.1.1-0.20211021164940-0aa602dc7c3f h1:mFzBB8suV4Mo7A2Ti+DnypOANHTkDW1J9xz0az0OR+w=
-github.com/progrium/macdriver v0.1.1-0.20211021164940-0aa602dc7c3f/go.mod h1:QkZLlOeMkYF92euEWqUBpry7/tXrZuM575xZRwnuiig=
 github.com/progrium/macdriver v0.2.0 h1:+b90k/lyX0K0sV/aYs9EzWSgVhOFMGytKsnCsa1Uh7M=
 github.com/progrium/macdriver v0.2.0/go.mod h1:QkZLlOeMkYF92euEWqUBpry7/tXrZuM575xZRwnuiig=
 github.com/progrium/macschema v0.1.0/go.mod h1:XzxlqYAo4vKozoZd837LBMjPcfJNlvwB5yBn5Nu+RDE=
-github.com/progrium/qtalk-go v0.0.0-20210817225420-97de0bf25f47 h1:b6WC1KlSvqfwhtQzmljuIyhYCYCgtNTu67EQhdMZwTk=
-github.com/progrium/qtalk-go v0.0.0-20210817225420-97de0bf25f47/go.mod h1:vBfnZmpi9OTX/xNKQ6VOeq6uiaG3B4mhXI39K62bvn8=
+github.com/progrium/qtalk-go v0.5.1-0.20211011215258-537841dc2464 h1:jRCiBZZvLllB1Ag7+7w9dEc4cpKC3x5vwOnM6qKE1Jo=
+github.com/progrium/qtalk-go v0.5.1-0.20211011215258-537841dc2464/go.mod h1:vBfnZmpi9OTX/xNKQ6VOeq6uiaG3B4mhXI39K62bvn8=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v0.9.3/go.mod h1:/TN21ttK/J9q6uSwhBd54HahCDft0ttaMvbicHlPoso=
 github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910/go.mod h1:MbSGuTsp3dbXC40dX6PRTWyKYBIrTGTE9sqQNg2J8bo=
