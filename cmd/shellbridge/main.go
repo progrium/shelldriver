@@ -11,7 +11,7 @@ import (
 	"github.com/progrium/shelldriver/bridge"
 )
 
-const Version = "0.1.0"
+const Version = "0.2.0"
 
 func init() {
 	runtime.LockOSThread()
